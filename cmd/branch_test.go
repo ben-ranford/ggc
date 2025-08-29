@@ -63,6 +63,29 @@ func (m *mockBranchGitClient) RestoreFromCommit(string, ...string) error {
 	return nil
 }
 
+// Add new methods required by git.Clienter interface
+func (m *mockBranchGitClient) Add(files ...string) error                   { return nil }
+func (m *mockBranchGitClient) AddInteractive() error                       { return nil }
+func (m *mockBranchGitClient) Commit(message string) error                 { return nil }
+func (m *mockBranchGitClient) CommitAmend() error                          { return nil }
+func (m *mockBranchGitClient) CommitAmendNoEdit() error                    { return nil }
+func (m *mockBranchGitClient) CommitAmendWithMessage(message string) error { return nil }
+func (m *mockBranchGitClient) Status() (string, error)                     { return "", nil }
+func (m *mockBranchGitClient) StatusShort() (string, error)                { return "", nil }
+func (m *mockBranchGitClient) StatusWithColor() (string, error)            { return "", nil }
+func (m *mockBranchGitClient) StatusShortWithColor() (string, error)       { return "", nil }
+func (m *mockBranchGitClient) Diff() (string, error)                       { return "", nil }
+func (m *mockBranchGitClient) DiffStaged() (string, error)                 { return "", nil }
+func (m *mockBranchGitClient) DiffHead() (string, error)                   { return "", nil }
+func (m *mockBranchGitClient) Fetch(prune bool) error                      { return nil }
+func (m *mockBranchGitClient) Stash() error                                { return nil }
+func (m *mockBranchGitClient) StashList() (string, error)                  { return "", nil }
+func (m *mockBranchGitClient) StashShow(stash string) error                { return nil }
+func (m *mockBranchGitClient) StashApply(stash string) error               { return nil }
+func (m *mockBranchGitClient) StashPop(stash string) error                 { return nil }
+func (m *mockBranchGitClient) StashDrop(stash string) error                { return nil }
+func (m *mockBranchGitClient) StashClear() error                           { return nil }
+
 func TestBrancher_Branch_Current(t *testing.T) {
 	var buf bytes.Buffer
 	mockClient := &mockBranchGitClient{

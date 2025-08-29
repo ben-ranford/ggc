@@ -3,42 +3,41 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"os"
-	"os/exec"
+
+	"github.com/bmf-san/ggc/v4/git"
 )
 
 // Adder provides functionality for the add command.
 type Adder struct {
-	execCommand func(name string, arg ...string) *exec.Cmd
+	gitClient    git.Clienter
+	outputWriter io.Writer
 }
 
 // NewAdder creates a new Adder.
 func NewAdder() *Adder {
-	return &Adder{execCommand: exec.Command}
+	return &Adder{
+		gitClient:    git.NewClient(),
+		outputWriter: os.Stdout,
+	}
 }
 
 // Add executes the add command with the given arguments.
 func (a *Adder) Add(args []string) {
 	if len(args) == 0 {
-		fmt.Println("Usage: ggc add <file> | ggc add -p")
+		_, _ = fmt.Fprintf(a.outputWriter, "Usage: ggc add <file> | ggc add -p\n")
 		return
 	}
+
 	if len(args) == 1 && args[0] == "-p" {
-		cmd := a.execCommand("git", "add", "-p")
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		cmd.Stdin = os.Stdin
-		if err := cmd.Run(); err != nil {
-			fmt.Println("error:", err)
+		if err := a.gitClient.AddInteractive(); err != nil {
+			_, _ = fmt.Fprintf(a.outputWriter, "Error: %v\n", err)
 		}
 		return
 	}
-	cmd := a.execCommand("git", append([]string{"add"}, args...)...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
-	err := cmd.Run()
-	if err != nil {
-		fmt.Println("error:", err)
+
+	if err := a.gitClient.Add(args...); err != nil {
+		_, _ = fmt.Fprintf(a.outputWriter, "Error: %v\n", err)
 	}
 }

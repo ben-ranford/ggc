@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"os/exec"
 	"strings"
 
 	"github.com/bmf-san/ggc/v4/git"
@@ -16,7 +15,6 @@ type Committer struct {
 	gitClient    git.Clienter
 	outputWriter io.Writer
 	helper       *Helper
-	execCommand  func(name string, arg ...string) *exec.Cmd
 }
 
 // NewCommitter creates a new Committer.
@@ -30,7 +28,6 @@ func NewCommitterWithClient(client git.Clienter) *Committer {
 		gitClient:    client,
 		outputWriter: os.Stdout,
 		helper:       NewHelper(),
-		execCommand:  exec.Command,
 	}
 	c.helper.outputWriter = c.outputWriter
 	return c
@@ -49,35 +46,25 @@ func (c *Committer) Commit(args []string) {
 			_, _ = fmt.Fprintf(c.outputWriter, "Error: %v\n", err)
 		}
 	case "amend":
-		var cmd *exec.Cmd
-
 		if len(args) == 1 {
-			cmd = c.execCommand("git", "commit", "--amend")
-			cmd.Stdin = os.Stdin
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
+			if err := c.gitClient.CommitAmend(); err != nil {
+				_, _ = fmt.Fprintf(c.outputWriter, "Error: %v\n", err)
+			}
 		} else if args[1] == "--no-edit" {
-			cmd = c.execCommand("git", "commit", "--amend", "--no-edit")
-			cmd.Stdout = c.outputWriter
-			cmd.Stderr = c.outputWriter
+			if err := c.gitClient.CommitAmendNoEdit(); err != nil {
+				_, _ = fmt.Fprintf(c.outputWriter, "Error: %v\n", err)
+			}
 		} else {
 			// Join all arguments after "amend" as the commit message
 			msg := strings.Join(args[1:], " ")
-			cmd = c.execCommand("git", "commit", "--amend", "-m", msg)
-			cmd.Stdout = c.outputWriter
-			cmd.Stderr = c.outputWriter
-		}
-
-		if err := cmd.Run(); err != nil {
-			_, _ = fmt.Fprintf(c.outputWriter, "Error: %v\n", err)
+			if err := c.gitClient.CommitAmendWithMessage(msg); err != nil {
+				_, _ = fmt.Fprintf(c.outputWriter, "Error: %v\n", err)
+			}
 		}
 	default:
 		// Handle normal commit with message
 		msg := strings.Join(args, " ")
-		cmd := c.execCommand("git", "commit", "-m", msg)
-		cmd.Stdout = c.outputWriter
-		cmd.Stderr = c.outputWriter
-		if err := cmd.Run(); err != nil {
+		if err := c.gitClient.Commit(msg); err != nil {
 			_, _ = fmt.Fprintf(c.outputWriter, "Error: %v\n", err)
 		}
 	}

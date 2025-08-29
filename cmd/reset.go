@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"os/exec"
 
 	"github.com/bmf-san/ggc/v4/git"
 )
@@ -14,7 +13,6 @@ import (
 type Resetter struct {
 	outputWriter io.Writer
 	helper       *Helper
-	execCommand  func(string, ...string) *exec.Cmd
 	gitClient    git.Clienter
 }
 
@@ -23,7 +21,7 @@ func NewResetter() *Resetter {
 	return &Resetter{
 		outputWriter: os.Stdout,
 		helper:       NewHelper(),
-		execCommand:  exec.Command,
+		gitClient:    git.NewClient(),
 	}
 }
 
@@ -32,7 +30,6 @@ func NewResetterWithClient(client git.Clienter) *Resetter {
 	return &Resetter{
 		outputWriter: os.Stdout,
 		helper:       NewHelper(),
-		execCommand:  exec.Command,
 		gitClient:    client,
 	}
 }
@@ -51,19 +48,16 @@ func (r *Resetter) Reset(args []string) {
 		return
 	}
 
-	var cmd *exec.Cmd
 	switch args[0] {
 	case "clean":
 		// Reset to HEAD and clean untracked files
-		cmd = r.execCommand("git", "reset", "--hard", "HEAD")
-		if err := cmd.Run(); err != nil {
-			_, _ = fmt.Fprintf(r.outputWriter, "Error resetting changes: reset failed\n")
+		if err := r.gitClient.ResetHard("HEAD"); err != nil {
+			_, _ = fmt.Fprintf(r.outputWriter, "Error: %v\n", err)
 			return
 		}
 
-		cmd = r.execCommand("git", "clean", "-fd")
-		if err := cmd.Run(); err != nil {
-			_, _ = fmt.Fprintf(r.outputWriter, "Error cleaning untracked files: clean failed\n")
+		if err := r.gitClient.CleanFiles(); err != nil {
+			_, _ = fmt.Fprintf(r.outputWriter, "Error: %v\n", err)
 			return
 		}
 		_, _ = fmt.Fprintf(r.outputWriter, "Reset and clean successful\n")
