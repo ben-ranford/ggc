@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"bytes"
-	"os/exec"
 	"strings"
 	"testing"
 )
@@ -42,15 +41,6 @@ func TestFetcher_Fetch(t *testing.T) {
 			f := &Fetcher{
 				outputWriter: &buf,
 				helper:       NewHelper(),
-				execCommand: func(name string, args ...string) *exec.Cmd {
-					if tc.expectedCmd != "" {
-						gotCmd := strings.Join(append([]string{name}, args...), " ")
-						if gotCmd != tc.expectedCmd {
-							t.Errorf("expected command %q, got %q", tc.expectedCmd, gotCmd)
-						}
-					}
-					return exec.Command("echo", string(tc.mockOutput))
-				},
 			}
 			f.helper.outputWriter = &buf
 
@@ -69,9 +59,6 @@ func TestFetcher_Fetch_Error(t *testing.T) {
 	f := &Fetcher{
 		outputWriter: &buf,
 		helper:       NewHelper(),
-		execCommand: func(_ string, _ ...string) *exec.Cmd {
-			return exec.Command("false") // Command that fails
-		},
 	}
 	f.helper.outputWriter = &buf
 

@@ -10,7 +10,7 @@ func TestNewBrancher(t *testing.T) {
 		t.Fatal("Expected Brancher, got nil")
 	}
 	// Basic field checks
-	if brancher.gitClient == nil || brancher.execCommand == nil || brancher.inputReader == nil ||
+	if brancher.gitClient == nil || brancher.inputReader == nil ||
 		brancher.outputWriter == nil || brancher.helper == nil {
 		t.Error("Expected all fields to be initialized")
 	}
@@ -22,7 +22,7 @@ func TestNewCommitter(t *testing.T) {
 		t.Fatal("Expected Committer, got nil")
 	}
 	// Basic field checks
-	if committer.gitClient == nil || committer.outputWriter == nil || committer.helper == nil || committer.execCommand == nil {
+	if committer.gitClient == nil || committer.outputWriter == nil || committer.helper == nil {
 		t.Error("Expected all fields to be initialized")
 	}
 }
@@ -33,7 +33,7 @@ func TestNewFetcher(t *testing.T) {
 		t.Fatal("Expected Fetcher, got nil")
 	}
 	// Basic field checks
-	if fetcher.outputWriter == nil || fetcher.helper == nil || fetcher.execCommand == nil {
+	if fetcher.outputWriter == nil || fetcher.helper == nil {
 		t.Error("Expected all fields to be initialized")
 	}
 }
@@ -44,7 +44,7 @@ func TestNewDiffer(t *testing.T) {
 		t.Fatal("Expected Differ, got nil")
 	}
 	// Basic field checks
-	if differ.outputWriter == nil || differ.helper == nil || differ.execCommand == nil {
+	if differ.outputWriter == nil || differ.helper == nil {
 		t.Error("Expected all fields to be initialized")
 	}
 }
@@ -55,7 +55,7 @@ func TestNewLogger(t *testing.T) {
 		t.Fatal("Expected Logger, got nil")
 	}
 	// Basic field checks
-	if logger.gitClient == nil || logger.outputWriter == nil || logger.helper == nil || logger.execCommand == nil {
+	if logger.gitClient == nil || logger.outputWriter == nil || logger.helper == nil {
 		t.Error("Expected all fields to be initialized")
 	}
 }
@@ -88,7 +88,7 @@ func TestNewRebaser(t *testing.T) {
 		t.Fatal("Expected Rebaser, got nil")
 	}
 	// Basic field checks
-	if rebaser.outputWriter == nil || rebaser.helper == nil || rebaser.execCommand == nil || rebaser.inputReader == nil {
+	if rebaser.outputWriter == nil || rebaser.helper == nil || rebaser.inputReader == nil {
 		t.Error("Expected all fields to be initialized")
 	}
 }
@@ -99,7 +99,7 @@ func TestNewRemoteer(t *testing.T) {
 		t.Fatal("Expected Remoteer, got nil")
 	}
 	// Basic field checks
-	if remoteer.execCommand == nil || remoteer.outputWriter == nil || remoteer.helper == nil {
+	if remoteer.outputWriter == nil || remoteer.helper == nil {
 		t.Error("Expected all fields to be initialized")
 	}
 }
@@ -110,7 +110,7 @@ func TestNewResetter(t *testing.T) {
 		t.Fatal("Expected Resetter, got nil")
 	}
 	// Basic field checks
-	if resetter.outputWriter == nil || resetter.helper == nil || resetter.execCommand == nil {
+	if resetter.outputWriter == nil || resetter.helper == nil {
 		t.Error("Expected all fields to be initialized")
 	}
 }
@@ -121,7 +121,7 @@ func TestNewStasher(t *testing.T) {
 		t.Fatal("Expected Stasher, got nil")
 	}
 	// Basic field checks
-	if stasher.outputWriter == nil || stasher.helper == nil || stasher.execCommand == nil {
+	if stasher.outputWriter == nil || stasher.helper == nil {
 		t.Error("Expected all fields to be initialized")
 	}
 }
@@ -132,7 +132,7 @@ func TestNewConfigureer(t *testing.T) {
 		t.Fatal("Expected configureer, got nil")
 	}
 	// Basic field checks
-	if configureer.outputWriter == nil || configureer.helper == nil || configureer.execCommand == nil {
+	if configureer.outputWriter == nil || configureer.helper == nil {
 		t.Error("Expected all fields to be initialized")
 	}
 }
@@ -143,7 +143,7 @@ func TestNewHooker(t *testing.T) {
 		t.Fatal("Expected Statuseer, got nil")
 	}
 	// Basic field checks
-	if hooker.outputWriter == nil || hooker.helper == nil || hooker.execCommand == nil {
+	if hooker.outputWriter == nil || hooker.helper == nil {
 		t.Error("Expected all fields to be initialized")
 	}
 }
@@ -154,7 +154,7 @@ func TestNewStatuseer(t *testing.T) {
 		t.Fatal("Expected Statuseer, got nil")
 	}
 	// Basic field checks
-	if statuseer.outputWriter == nil || statuseer.helper == nil || statuseer.execCommand == nil {
+	if statuseer.outputWriter == nil || statuseer.helper == nil {
 		t.Error("Expected all fields to be initialized")
 	}
 }
@@ -165,7 +165,7 @@ func TestNewRestoreer(t *testing.T) {
 		t.Fatal("Expected Restoreer, got nil")
 	}
 	// Basic field checks
-	if restoreer.outputWriter == nil || restoreer.helper == nil || restoreer.execCommand == nil {
+	if restoreer.outputWriter == nil || restoreer.helper == nil {
 		t.Error("Expected all fields to be initialized")
 	}
 }
@@ -176,7 +176,7 @@ func TestNewTagger(t *testing.T) {
 		t.Fatal("Expected Tagger, got nil")
 	}
 	// Basic field checks
-	if tagger.outputWriter == nil || tagger.helper == nil || tagger.execCommand == nil {
+	if tagger.outputWriter == nil || tagger.helper == nil {
 		t.Error("Expected all fields to be initialized")
 	}
 }
@@ -187,7 +187,7 @@ func TestNewVersioneer(t *testing.T) {
 		t.Fatal("Expected Versioneer, got nil")
 	}
 	// Basic field checks
-	if versioneer.outputWriter == nil || versioneer.helper == nil || versioneer.execCommand == nil {
+	if versioneer.outputWriter == nil || versioneer.helper == nil {
 		t.Error("Expected all fields to be initialized")
 	}
 }

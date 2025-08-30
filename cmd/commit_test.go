@@ -3,7 +3,6 @@ package cmd
 import (
 	"bytes"
 	"errors"
-	"os/exec"
 	"strings"
 	"testing"
 
@@ -29,7 +28,6 @@ func TestCommitter_Commit_AllowEmpty(t *testing.T) {
 		gitClient:    mockClient,
 		outputWriter: &buf,
 		helper:       NewHelper(),
-		execCommand:  exec.Command,
 	}
 	c.helper.outputWriter = &buf
 	c.Commit([]string{"allow-empty"})
@@ -44,7 +42,6 @@ func TestCommitter_Commit_Help(t *testing.T) {
 		gitClient:    &mockCommitGitClient{},
 		outputWriter: &buf,
 		helper:       NewHelper(),
-		execCommand:  exec.Command,
 	}
 	c.helper.outputWriter = &buf
 	c.Commit([]string{})
@@ -61,7 +58,6 @@ func TestCommitter_Commit_AllowEmpty_Error(t *testing.T) {
 		gitClient:    &mockCommitGitClient{err: errors.New("fail")},
 		outputWriter: &buf,
 		helper:       NewHelper(),
-		execCommand:  exec.Command,
 	}
 	c.helper.outputWriter = &buf
 	c.Commit([]string{"allow-empty"})
@@ -79,12 +75,6 @@ func TestCommitter_Commit_Normal(t *testing.T) {
 		gitClient:    &mockCommitGitClient{},
 		outputWriter: &buf,
 		helper:       NewHelper(),
-		execCommand: func(name string, arg ...string) *exec.Cmd {
-			if name == "git" && len(arg) == 3 && arg[0] == "commit" && arg[1] == "-m" && arg[2] == "test message" {
-				commandCalled = true
-			}
-			return exec.Command("echo")
-		},
 	}
 	c.helper.outputWriter = &buf
 	c.Commit([]string{"test message"})
@@ -101,12 +91,6 @@ func TestCommitter_Commit_Normal_WithBrackets(t *testing.T) {
 		gitClient:    &mockCommitGitClient{},
 		outputWriter: &buf,
 		helper:       NewHelper(),
-		execCommand: func(name string, arg ...string) *exec.Cmd {
-			if name == "git" && len(arg) == 3 && arg[0] == "commit" && arg[1] == "-m" && arg[2] == "[update] test message" {
-				commandCalled = true
-			}
-			return exec.Command("echo")
-		},
 	}
 	c.helper.outputWriter = &buf
 	c.Commit([]string{"[update]", "test", "message"})
@@ -122,9 +106,6 @@ func TestCommitter_Commit_Normal_Error(t *testing.T) {
 		gitClient:    &mockCommitGitClient{},
 		outputWriter: &buf,
 		helper:       NewHelper(),
-		execCommand: func(_ string, _ ...string) *exec.Cmd {
-			return exec.Command("false") // command that fails
-		},
 	}
 	c.helper.outputWriter = &buf
 	c.Commit([]string{"test message"})
@@ -142,13 +123,6 @@ func TestCommitter_Commit_Amend_WithMessage(t *testing.T) {
 		gitClient:    &mockCommitGitClient{},
 		outputWriter: &buf,
 		helper:       NewHelper(),
-		execCommand: func(name string, arg ...string) *exec.Cmd {
-			if name == "git" && len(arg) == 4 && arg[0] == "commit" &&
-				arg[1] == "--amend" && arg[2] == "-m" && arg[3] == "updated message" {
-				commandCalled = true
-			}
-			return exec.Command("echo")
-		},
 	}
 	c.helper.outputWriter = &buf
 	c.Commit([]string{"amend", "updated message"})
@@ -164,12 +138,6 @@ func TestCommitter_Commit_Amend_NoEdit(t *testing.T) {
 		gitClient:    &mockCommitGitClient{},
 		outputWriter: &buf,
 		helper:       NewHelper(),
-		execCommand: func(name string, arg ...string) *exec.Cmd {
-			if name == "git" && len(arg) == 3 && arg[0] == "commit" && arg[1] == "--amend" && arg[2] == "--no-edit" {
-				commandCalled = true
-			}
-			return exec.Command("echo")
-		},
 	}
 	c.helper.outputWriter = &buf
 	c.Commit([]string{"amend", "--no-edit"})
@@ -184,9 +152,6 @@ func TestCommitter_Commit_Amend_Error(t *testing.T) {
 		gitClient:    &mockCommitGitClient{},
 		outputWriter: &buf,
 		helper:       NewHelper(),
-		execCommand: func(_ string, _ ...string) *exec.Cmd {
-			return exec.Command("false") // command that fails
-		},
 	}
 	c.helper.outputWriter = &buf
 	c.Commit([]string{"amend", "test message"})
@@ -203,12 +168,6 @@ func TestCommitter_Commit_Normal_NoSpace(t *testing.T) {
 		gitClient:    &mockCommitGitClient{},
 		outputWriter: &buf,
 		helper:       NewHelper(),
-		execCommand: func(name string, arg ...string) *exec.Cmd {
-			if name == "git" && len(arg) == 3 && arg[0] == "commit" && arg[1] == "-m" && arg[2] == "[update]hoge" {
-				commandCalled = true
-			}
-			return exec.Command("echo")
-		},
 	}
 	c.helper.outputWriter = &buf
 	c.Commit([]string{"[update]hoge"})
@@ -225,13 +184,6 @@ func TestCommitter_Commit_Amend_WithMultiWordMessage(t *testing.T) {
 		gitClient:    &mockCommitGitClient{},
 		outputWriter: &buf,
 		helper:       NewHelper(),
-		execCommand: func(name string, arg ...string) *exec.Cmd {
-			if name == "git" && len(arg) == 4 && arg[0] == "commit" &&
-				arg[1] == "--amend" && arg[2] == "-m" && arg[3] == "[update] message with spaces" {
-				commandCalled = true
-			}
-			return exec.Command("echo")
-		},
 	}
 	c.helper.outputWriter = &buf
 	c.Commit([]string{"amend", "[update]", "message", "with", "spaces"})

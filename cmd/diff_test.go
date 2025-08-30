@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"bytes"
-	"os/exec"
 	"strings"
 	"testing"
 )
@@ -53,23 +52,9 @@ func TestDiffer_Diff(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			var buf bytes.Buffer
-			cmdIndex := 0
 			d := &Differ{
 				outputWriter: &buf,
 				helper:       NewHelper(),
-				execCommand: func(_ string, args ...string) *exec.Cmd {
-					if cmdIndex < len(tc.expectedCmds) {
-						gotCmd := strings.Join(append([]string{"git"}, args...), " ")
-						if gotCmd != tc.expectedCmds[cmdIndex] {
-							t.Errorf("expected command %q, got %q", tc.expectedCmds[cmdIndex], gotCmd)
-						}
-					}
-					cmdIndex++
-					if tc.mockError != nil {
-						return exec.Command("false")
-					}
-					return exec.Command("echo", string(tc.mockOutput))
-				},
 			}
 			d.helper.outputWriter = &buf
 			d.Diff(tc.args)

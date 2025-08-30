@@ -3,25 +3,19 @@ package cmd
 import (
 	"bytes"
 	"errors"
-	"os"
 	"strings"
 	"testing"
 )
 
 func TestAdder_Add_NoArgs_PrintsUsage(t *testing.T) {
-	adder := NewAdder()
-	oldStdout := os.Stdout
-	r, w, _ := os.Pipe()
-	os.Stdout = w
+	mockClient := &mockAddGitClient{}
+	var buf bytes.Buffer
+	adder := &Adder{
+		gitClient:    mockClient,
+		outputWriter: &buf,
+	}
 
 	adder.Add([]string{})
-
-	if err := w.Close(); err != nil {
-		t.Fatalf("w.Close() failed: %v", err)
-	}
-	var buf bytes.Buffer
-	_, _ = buf.ReadFrom(r)
-	os.Stdout = oldStdout
 
 	output := buf.String()
 	if output == "" || output[:5] != "Usage" {
@@ -35,6 +29,7 @@ type mockAddGitClient struct {
 	addInteractiveCalled bool
 	addFiles             []string
 	addError             error
+	addInteractiveError  error
 }
 
 func (m *mockAddGitClient) Add(files ...string) error {
@@ -45,7 +40,7 @@ func (m *mockAddGitClient) Add(files ...string) error {
 
 func (m *mockAddGitClient) AddInteractive() error {
 	m.addInteractiveCalled = true
-	return m.addError
+	return m.addInteractiveError
 }
 
 // Repository Information methods
@@ -226,47 +221,33 @@ func TestAdder_Add_POption_CallsGitAddP(t *testing.T) {
 }
 
 func TestAdder_Add_POption_Error(t *testing.T) {
-	oldStdout := os.Stdout
-	r, w, _ := os.Pipe()
-	os.Stdout = w
-	mockClient := &mockAddGitClient{addError: errors.New("git add failed")}
+	mockClient := &mockAddGitClient{addInteractiveError: errors.New("interactive add failed")}
+	var buf bytes.Buffer
 	adder := &Adder{
-		gitClient: mockClient,
+		gitClient:    mockClient,
+		outputWriter: &buf,
 	}
 	adder.Add([]string{"-p"})
-	if err := w.Close(); err != nil {
-		t.Fatalf("w.Close() failed: %v", err)
-	}
-	var buf bytes.Buffer
-	_, _ = buf.ReadFrom(r)
-	os.Stdout = oldStdout
+	
 	output := buf.String()
-	if output == "" || output[:5] != "error" {
+	if output == "" || output[:5] != "Error" {
 		t.Errorf("Error output not generated with -p option: %s", output)
 	}
 }
 
 func TestAdder_Add_Interactive(t *testing.T) {
-	var buf bytes.Buffer
 	mockClient := &mockAddGitClient{}
+	var buf bytes.Buffer
 	adder := &Adder{
-		gitClient: mockClient,
+		gitClient:    mockClient,
+		outputWriter: &buf,
 	}
-
-	// Capture stdout
-	oldStdout := os.Stdout
-	r, w, _ := os.Pipe()
-	os.Stdout = w
 
 	adder.Add([]string{"-p"})
 
-	_ = w.Close()
-	os.Stdout = oldStdout
-
-	_, _ = buf.ReadFrom(r)
-	output := buf.String()
-	if !strings.Contains(output, "interactive add") {
-		t.Errorf("expected interactive add output, got %q", output)
+	// Check that AddInteractive was called
+	if !mockClient.addInteractiveCalled {
+		t.Error("AddInteractive should be called for -p option")
 	}
 }
 
@@ -306,53 +287,37 @@ func TestAdder_Add(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			mockClient := &mockAddGitClient{}
+			var buf bytes.Buffer
 			a := &Adder{
-				gitClient: mockClient,
+				gitClient:    mockClient,
+				outputWriter: &buf,
 			}
 
-			// Capture stdout for no args case
+			a.Add(tc.args)
+
+			// Check output for no args case
 			if len(tc.args) == 0 {
-				oldStdout := os.Stdout
-				r, w, _ := os.Pipe()
-				os.Stdout = w
-
-				a.Add(tc.args)
-
-				_ = w.Close()
-				os.Stdout = oldStdout
-
-				var buf bytes.Buffer
-				_, _ = buf.ReadFrom(r)
 				output := buf.String()
 				if !strings.Contains(output, "Usage:") {
 					t.Errorf("expected usage message, got %q", output)
 				}
-			} else {
-				a.Add(tc.args)
 			}
 		})
 	}
 }
 
 func TestAdder_Add_Error(t *testing.T) {
-	oldStdout := os.Stdout
-	r, w, _ := os.Pipe()
-	os.Stdout = w
-
 	mockClient := &mockAddGitClient{addError: errors.New("git add failed")}
+	var buf bytes.Buffer
 	a := &Adder{
-		gitClient: mockClient,
+		gitClient:    mockClient,
+		outputWriter: &buf,
 	}
 
 	a.Add([]string{"file.txt"})
 
-	_ = w.Close()
-	os.Stdout = oldStdout
-
-	var buf bytes.Buffer
-	_, _ = buf.ReadFrom(r)
 	output := buf.String()
-	if !strings.Contains(output, "error:") {
+	if !strings.Contains(output, "Error:") {
 		t.Errorf("expected error message, got %q", output)
 	}
 }

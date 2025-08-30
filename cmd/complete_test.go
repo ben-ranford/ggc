@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"os"
-	"os/exec"
 	"strings"
 	"testing"
 )
@@ -44,6 +43,63 @@ func (m *mockCompleteGitClient) RestoreStaged(...string) error             { ret
 func (m *mockCompleteGitClient) RestoreWorkingDir(...string) error         { return nil }
 func (m *mockCompleteGitClient) RestoreFromCommit(string, ...string) error { return nil }
 
+// Add missing methods to satisfy git.Clienter interface
+func (m *mockCompleteGitClient) Add(files ...string) error                   { return nil }
+func (m *mockCompleteGitClient) AddInteractive() error                       { return nil }
+func (m *mockCompleteGitClient) Status() (string, error)                     { return "", nil }
+func (m *mockCompleteGitClient) StatusShort() (string, error)                { return "", nil }
+func (m *mockCompleteGitClient) StatusWithColor() (string, error)            { return "", nil }
+func (m *mockCompleteGitClient) StatusShortWithColor() (string, error)       { return "", nil }
+func (m *mockCompleteGitClient) CommitAmend() error                          { return nil }
+func (m *mockCompleteGitClient) CommitAmendNoEdit() error                    { return nil }
+func (m *mockCompleteGitClient) CommitAmendWithMessage(message string) error { return nil }
+func (m *mockCompleteGitClient) Diff() (string, error)                       { return "", nil }
+func (m *mockCompleteGitClient) DiffStaged() (string, error)                 { return "", nil }
+func (m *mockCompleteGitClient) DiffHead() (string, error)                   { return "", nil }
+func (m *mockCompleteGitClient) CheckoutBranch(name string) error            { return nil }
+func (m *mockCompleteGitClient) CheckoutNewBranchFromRemote(localBranch, remoteBranch string) error {
+	return nil
+}
+func (m *mockCompleteGitClient) DeleteBranch(name string) error                { return nil }
+func (m *mockCompleteGitClient) ListMergedBranches() ([]string, error)         { return []string{}, nil }
+func (m *mockCompleteGitClient) Fetch(prune bool) error                        { return nil }
+func (m *mockCompleteGitClient) RemoteList() error                             { return nil }
+func (m *mockCompleteGitClient) RemoteAdd(name, url string) error              { return nil }
+func (m *mockCompleteGitClient) RemoteRemove(name string) error                { return nil }
+func (m *mockCompleteGitClient) RemoteSetURL(name, url string) error           { return nil }
+func (m *mockCompleteGitClient) TagList(pattern []string) error                { return nil }
+func (m *mockCompleteGitClient) TagCreate(name string, commit string) error    { return nil }
+func (m *mockCompleteGitClient) TagCreateAnnotated(name, message string) error { return nil }
+func (m *mockCompleteGitClient) TagDelete(names []string) error                { return nil }
+func (m *mockCompleteGitClient) TagPush(remote, name string) error             { return nil }
+func (m *mockCompleteGitClient) TagPushAll(remote string) error                { return nil }
+func (m *mockCompleteGitClient) TagShow(name string) error                     { return nil }
+func (m *mockCompleteGitClient) GetLatestTag() (string, error)                 { return "v1.0.0", nil }
+func (m *mockCompleteGitClient) TagExists(name string) bool                    { return false }
+func (m *mockCompleteGitClient) GetTagCommit(name string) (string, error)      { return "abc123", nil }
+func (m *mockCompleteGitClient) LogOneline(from, to string) (string, error)    { return "", nil }
+func (m *mockCompleteGitClient) RebaseInteractive(commitCount int) error       { return nil }
+func (m *mockCompleteGitClient) GetUpstreamBranch(branch string) (string, error) {
+	return "origin/main", nil
+}
+func (m *mockCompleteGitClient) Stash() error                         { return nil }
+func (m *mockCompleteGitClient) StashList() (string, error)           { return "", nil }
+func (m *mockCompleteGitClient) StashShow(stash string) error         { return nil }
+func (m *mockCompleteGitClient) StashApply(stash string) error        { return nil }
+func (m *mockCompleteGitClient) StashPop(stash string) error          { return nil }
+func (m *mockCompleteGitClient) StashDrop(stash string) error         { return nil }
+func (m *mockCompleteGitClient) StashClear() error                    { return nil }
+func (m *mockCompleteGitClient) ResetHard(commit string) error        { return nil }
+func (m *mockCompleteGitClient) CleanDryRun() (string, error)         { return "", nil }
+func (m *mockCompleteGitClient) CleanFilesForce(files []string) error { return nil }
+func (m *mockCompleteGitClient) ListFiles() (string, error)           { return "", nil }
+func (m *mockCompleteGitClient) GetUpstreamBranchName(branch string) (string, error) {
+	return "origin/main", nil
+}
+func (m *mockCompleteGitClient) GetAheadBehindCount(branch, upstream string) (string, error) {
+	return "0	0", nil
+}
+
 func TestCompleter_Complete_Branch(t *testing.T) {
 	// Capture stdout
 	oldStdout := os.Stdout
@@ -51,10 +107,7 @@ func TestCompleter_Complete_Branch(t *testing.T) {
 	os.Stdout = w
 
 	c := &Completer{
-		gitClient: &mockGitClient{},
-		execCommand: func(_ string, _ ...string) *exec.Cmd {
-			return exec.Command("echo")
-		},
+		gitClient: &mockCompleteGitClient{},
 	}
 
 	c.Complete([]string{"branch"})
@@ -79,10 +132,7 @@ func TestCompleter_Complete_Branch_WithSecondArg(t *testing.T) {
 	os.Stdout = w
 
 	c := &Completer{
-		gitClient: &mockGitClient{},
-		execCommand: func(_ string, _ ...string) *exec.Cmd {
-			return exec.Command("echo")
-		},
+		gitClient: &mockCompleteGitClient{},
 	}
 
 	c.Complete([]string{"branch", "checkout"})
@@ -107,10 +157,7 @@ func TestCompleter_Complete_Files(t *testing.T) {
 	os.Stdout = w
 
 	c := &Completer{
-		gitClient: &mockGitClient{},
-		execCommand: func(_ string, _ ...string) *exec.Cmd {
-			return exec.Command("echo", "file1.go\nfile2.go")
-		},
+		gitClient: &mockCompleteGitClient{},
 	}
 
 	c.Complete([]string{"files"})
@@ -134,8 +181,7 @@ func TestCompleter_Complete_NoArgs(t *testing.T) {
 	os.Stdout = w
 
 	c := &Completer{
-		gitClient:   &mockGitClient{},
-		execCommand: exec.Command,
+		gitClient: &mockGitClient{},
 	}
 
 	c.Complete([]string{})
@@ -160,8 +206,7 @@ func TestCompleter_Complete_Unknown(t *testing.T) {
 	os.Stdout = w
 
 	c := &Completer{
-		gitClient:   &mockGitClient{},
-		execCommand: exec.Command,
+		gitClient: &mockGitClient{},
 	}
 
 	c.Complete([]string{"unknown"})
@@ -237,10 +282,7 @@ func TestCompleter_Complete_BranchList_Error(t *testing.T) {
 
 func TestCompleter_Complete_Files_Error(t *testing.T) {
 	completer := &Completer{
-		gitClient: &mockGitClient{},
-		execCommand: func(_ string, _ ...string) *exec.Cmd {
-			return exec.Command("false")
-		},
+		gitClient: &mockCompleteGitClient{},
 	}
 	oldStdout := os.Stdout
 	r, w, _ := os.Pipe()

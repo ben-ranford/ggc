@@ -50,9 +50,8 @@ func (s *Statuseer) getUpstreamStatus(branch string) string {
 			return fmt.Sprintf("Your branch is ahead of '%s' by %s commit(s)", upstream, ahead)
 		} else if ahead == "0" && behind != "0" {
 			return fmt.Sprintf("Your branch is behind '%s' by %s commit(s)", upstream, behind)
-		} else {
-			return fmt.Sprintf("Your branch and '%s' have diverged,\nand have %s and %s different commits each, respectively", upstream, ahead, behind)
 		}
+		return fmt.Sprintf("Your branch and '%s' have diverged,\nand have %s and %s different commits each, respectively", upstream, ahead, behind)
 	}
 
 	return fmt.Sprintf("Your branch is up to date with '%s'", upstream)
