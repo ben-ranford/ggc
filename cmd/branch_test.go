@@ -4,14 +4,12 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"os/exec"
 	"strings"
 	"testing"
 )
 
 // mockBranchGitClient is a mock implementation of git.Clienter for branch tests
 type mockBranchGitClient struct {
-	mockGitClient
 	getCurrentBranchCalled bool
 	currentBranch          string
 	err                    error
@@ -38,53 +36,105 @@ func (m *mockBranchGitClient) ListRemoteBranches() ([]string, error) {
 	return []string{"origin/main", "origin/feature/test"}, nil
 }
 
-// define other functions as nil except branch testing ones
-func (m *mockBranchGitClient) LogGraph() error {
-	return nil
-}
+// Repository Information methods
+func (m *mockBranchGitClient) GetBranchName() (string, error) { return "main", nil }
+func (m *mockBranchGitClient) GetGitStatus() (string, error)  { return "", nil }
 
-func (m *mockBranchGitClient) RestoreAll() error {
-	return nil
-}
+// Status Operations methods
+func (m *mockBranchGitClient) Status() (string, error)               { return "", nil }
+func (m *mockBranchGitClient) StatusShort() (string, error)          { return "", nil }
+func (m *mockBranchGitClient) StatusWithColor() (string, error)      { return "", nil }
+func (m *mockBranchGitClient) StatusShortWithColor() (string, error) { return "", nil }
 
-func (m *mockBranchGitClient) RestoreAllStaged() error {
-	return nil
-}
+// Staging Operations methods
+func (m *mockBranchGitClient) Add(files ...string) error { return nil }
+func (m *mockBranchGitClient) AddInteractive() error     { return nil }
 
-func (m *mockBranchGitClient) RestoreStaged(...string) error {
-	return nil
-}
-
-func (m *mockBranchGitClient) RestoreWorkingDir(...string) error {
-	return nil
-}
-
-func (m *mockBranchGitClient) RestoreFromCommit(string, ...string) error {
-	return nil
-}
-
-// Add new methods required by git.Clienter interface
-func (m *mockBranchGitClient) Add(files ...string) error                   { return nil }
-func (m *mockBranchGitClient) AddInteractive() error                       { return nil }
+// Commit Operations methods
 func (m *mockBranchGitClient) Commit(message string) error                 { return nil }
 func (m *mockBranchGitClient) CommitAmend() error                          { return nil }
 func (m *mockBranchGitClient) CommitAmendNoEdit() error                    { return nil }
 func (m *mockBranchGitClient) CommitAmendWithMessage(message string) error { return nil }
-func (m *mockBranchGitClient) Status() (string, error)                     { return "", nil }
-func (m *mockBranchGitClient) StatusShort() (string, error)                { return "", nil }
-func (m *mockBranchGitClient) StatusWithColor() (string, error)            { return "", nil }
-func (m *mockBranchGitClient) StatusShortWithColor() (string, error)       { return "", nil }
-func (m *mockBranchGitClient) Diff() (string, error)                       { return "", nil }
-func (m *mockBranchGitClient) DiffStaged() (string, error)                 { return "", nil }
-func (m *mockBranchGitClient) DiffHead() (string, error)                   { return "", nil }
-func (m *mockBranchGitClient) Fetch(prune bool) error                      { return nil }
-func (m *mockBranchGitClient) Stash() error                                { return nil }
-func (m *mockBranchGitClient) StashList() (string, error)                  { return "", nil }
-func (m *mockBranchGitClient) StashShow(stash string) error                { return nil }
-func (m *mockBranchGitClient) StashApply(stash string) error               { return nil }
-func (m *mockBranchGitClient) StashPop(stash string) error                 { return nil }
-func (m *mockBranchGitClient) StashDrop(stash string) error                { return nil }
-func (m *mockBranchGitClient) StashClear() error                           { return nil }
+func (m *mockBranchGitClient) CommitAllowEmpty() error                     { return nil }
+
+// Diff Operations methods
+func (m *mockBranchGitClient) Diff() (string, error)       { return "", nil }
+func (m *mockBranchGitClient) DiffStaged() (string, error) { return "", nil }
+func (m *mockBranchGitClient) DiffHead() (string, error)   { return "", nil }
+
+// Branch Operations methods
+func (m *mockBranchGitClient) CheckoutNewBranch(name string) error { return nil }
+func (m *mockBranchGitClient) CheckoutBranch(name string) error    { return nil }
+func (m *mockBranchGitClient) CheckoutNewBranchFromRemote(localBranch, remoteBranch string) error {
+	return nil
+}
+func (m *mockBranchGitClient) DeleteBranch(name string) error        { return nil }
+func (m *mockBranchGitClient) ListMergedBranches() ([]string, error) { return []string{}, nil }
+
+// Remote Operations methods
+func (m *mockBranchGitClient) Push(force bool) error               { return nil }
+func (m *mockBranchGitClient) Pull(rebase bool) error              { return nil }
+func (m *mockBranchGitClient) Fetch(prune bool) error              { return nil }
+func (m *mockBranchGitClient) RemoteList() error                   { return nil }
+func (m *mockBranchGitClient) RemoteAdd(name, url string) error    { return nil }
+func (m *mockBranchGitClient) RemoteRemove(name string) error      { return nil }
+func (m *mockBranchGitClient) RemoteSetURL(name, url string) error { return nil }
+
+// Tag Operations methods
+func (m *mockBranchGitClient) TagList(pattern []string) error                { return nil }
+func (m *mockBranchGitClient) TagCreate(name string, commit string) error    { return nil }
+func (m *mockBranchGitClient) TagCreateAnnotated(name, message string) error { return nil }
+func (m *mockBranchGitClient) TagDelete(names []string) error                { return nil }
+func (m *mockBranchGitClient) TagPush(remote, name string) error             { return nil }
+func (m *mockBranchGitClient) TagPushAll(remote string) error                { return nil }
+func (m *mockBranchGitClient) TagShow(name string) error                     { return nil }
+func (m *mockBranchGitClient) GetLatestTag() (string, error)                 { return "v1.0.0", nil }
+func (m *mockBranchGitClient) TagExists(name string) bool                    { return false }
+func (m *mockBranchGitClient) GetTagCommit(name string) (string, error)      { return "abc123", nil }
+
+// Log Operations methods
+func (m *mockBranchGitClient) LogSimple() error                           { return nil }
+func (m *mockBranchGitClient) LogGraph() error                            { return nil }
+func (m *mockBranchGitClient) LogOneline(from, to string) (string, error) { return "", nil }
+
+// Rebase Operations methods
+func (m *mockBranchGitClient) RebaseInteractive(commitCount int) error { return nil }
+func (m *mockBranchGitClient) GetUpstreamBranch(branch string) (string, error) {
+	return "origin/main", nil
+}
+
+// Stash Operations methods
+func (m *mockBranchGitClient) Stash() error                  { return nil }
+func (m *mockBranchGitClient) StashList() (string, error)    { return "", nil }
+func (m *mockBranchGitClient) StashShow(stash string) error  { return nil }
+func (m *mockBranchGitClient) StashApply(stash string) error { return nil }
+func (m *mockBranchGitClient) StashPop(stash string) error   { return nil }
+func (m *mockBranchGitClient) StashDrop(stash string) error  { return nil }
+func (m *mockBranchGitClient) StashClear() error             { return nil }
+
+// Reset and Clean Operations methods
+func (m *mockBranchGitClient) ResetHardAndClean() error             { return nil }
+func (m *mockBranchGitClient) ResetHard(commit string) error        { return nil }
+func (m *mockBranchGitClient) CleanFiles() error                    { return nil }
+func (m *mockBranchGitClient) CleanDirs() error                     { return nil }
+func (m *mockBranchGitClient) CleanDryRun() (string, error)         { return "", nil }
+func (m *mockBranchGitClient) CleanFilesForce(files []string) error { return nil }
+
+// Utility Operations methods
+func (m *mockBranchGitClient) ListFiles() (string, error) { return "", nil }
+func (m *mockBranchGitClient) GetUpstreamBranchName(branch string) (string, error) {
+	return "origin/main", nil
+}
+func (m *mockBranchGitClient) GetAheadBehindCount(branch, upstream string) (string, error) {
+	return "0	0", nil
+}
+
+// Restore Operations methods
+func (m *mockBranchGitClient) RestoreWorkingDir(paths ...string) error                { return nil }
+func (m *mockBranchGitClient) RestoreStaged(paths ...string) error                    { return nil }
+func (m *mockBranchGitClient) RestoreFromCommit(commit string, paths ...string) error { return nil }
+func (m *mockBranchGitClient) RestoreAll() error                                      { return nil }
+func (m *mockBranchGitClient) RestoreAllStaged() error                                { return nil }
 
 func TestBrancher_Branch_Current(t *testing.T) {
 	var buf bytes.Buffer
@@ -134,8 +184,8 @@ func TestBrancher_Branch_Checkout(t *testing.T) {
 	brancher := &Brancher{
 		gitClient:    mockClient,
 		outputWriter: &buf,
-		execCommand:  func(_ string, _ ...string) *exec.Cmd { return exec.Command("echo") },
-		inputReader:  bufio.NewReader(strings.NewReader("1\n")),
+
+		inputReader: bufio.NewReader(strings.NewReader("1\n")),
 	}
 	brancher.Branch([]string{"checkout"})
 
@@ -152,8 +202,8 @@ func TestBrancher_Branch_CheckoutRemote(t *testing.T) {
 		gitClient:    &mockBranchGitClient{},
 		outputWriter: &buf,
 		helper:       NewHelper(),
-		execCommand:  func(_ string, _ ...string) *exec.Cmd { return exec.Command("echo") },
-		inputReader:  bufio.NewReader(strings.NewReader("1\n")),
+
+		inputReader: bufio.NewReader(strings.NewReader("1\n")),
 	}
 	brancher.helper.outputWriter = &buf
 
@@ -171,8 +221,8 @@ func TestBrancher_Branch_Delete(t *testing.T) {
 		gitClient:    &mockBranchGitClient{},
 		outputWriter: &buf,
 		helper:       NewHelper(),
-		execCommand:  func(_ string, _ ...string) *exec.Cmd { return exec.Command("echo") },
-		inputReader:  bufio.NewReader(strings.NewReader("1\n")),
+
+		inputReader: bufio.NewReader(strings.NewReader("1\n")),
 	}
 	brancher.helper.outputWriter = &buf
 
@@ -193,13 +243,7 @@ func TestBrancher_Branch_DeleteMerged(t *testing.T) {
 		gitClient:    mockClient,
 		outputWriter: &buf,
 		helper:       NewHelper(),
-		execCommand: func(name string, args ...string) *exec.Cmd {
-			if name == "git" && len(args) > 0 && args[0] == "branch" && args[1] == "--merged" {
-				cmd := exec.Command("echo", "  main\n  feature/merged")
-				return cmd
-			}
-			return exec.Command("echo")
-		},
+
 		inputReader: bufio.NewReader(strings.NewReader("1\n")),
 	}
 	brancher.helper.outputWriter = &buf
@@ -292,8 +336,8 @@ func TestBrancher_branchCheckout_InvalidNumber(t *testing.T) {
 	brancher := &Brancher{
 		gitClient:    mockClient,
 		outputWriter: &buf,
-		execCommand:  func(_ string, _ ...string) *exec.Cmd { return exec.Command("echo") },
-		inputReader:  bufio.NewReader(strings.NewReader("invalid\n")),
+
+		inputReader: bufio.NewReader(strings.NewReader("invalid\n")),
 	}
 	brancher.branchCheckout()
 
@@ -313,8 +357,8 @@ func TestBrancher_branchDelete_Success(t *testing.T) {
 	brancher := &Brancher{
 		gitClient:    mockClient,
 		outputWriter: &buf,
-		execCommand:  func(_ string, _ ...string) *exec.Cmd { return exec.Command("echo") },
-		inputReader:  bufio.NewReader(strings.NewReader("1 2\n")),
+
+		inputReader: bufio.NewReader(strings.NewReader("1 2\n")),
 	}
 
 	brancher.branchDelete()
@@ -338,8 +382,8 @@ func TestBrancher_branchDelete_All(t *testing.T) {
 	brancher := &Brancher{
 		gitClient:    mockClient,
 		outputWriter: &buf,
-		execCommand:  func(_ string, _ ...string) *exec.Cmd { return exec.Command("echo") },
-		inputReader:  bufio.NewReader(strings.NewReader("all\n")),
+
+		inputReader: bufio.NewReader(strings.NewReader("all\n")),
 	}
 
 	brancher.branchDelete()
@@ -360,8 +404,8 @@ func TestBrancher_branchDelete_Cancel(t *testing.T) {
 	brancher := &Brancher{
 		gitClient:    mockClient,
 		outputWriter: &buf,
-		execCommand:  func(_ string, _ ...string) *exec.Cmd { return exec.Command("echo") },
-		inputReader:  bufio.NewReader(strings.NewReader("\n")),
+
+		inputReader: bufio.NewReader(strings.NewReader("\n")),
 	}
 
 	brancher.branchDelete()
@@ -420,13 +464,7 @@ func TestBrancher_branchDeleteMerged_Success(t *testing.T) {
 	brancher := &Brancher{
 		gitClient:    mockClient,
 		outputWriter: &buf,
-		execCommand: func(name string, args ...string) *exec.Cmd {
-			if name == "git" && len(args) > 0 && args[0] == "branch" && args[1] == "--merged" {
-				cmd := exec.Command("echo", "  main\n  feature/merged\n  bugfix/old")
-				return cmd
-			}
-			return exec.Command("echo")
-		},
+
 		inputReader: bufio.NewReader(strings.NewReader("1 2\n")),
 	}
 
@@ -446,13 +484,7 @@ func TestBrancher_branchDeleteMerged_All(t *testing.T) {
 	brancher := &Brancher{
 		gitClient:    mockClient,
 		outputWriter: &buf,
-		execCommand: func(name string, args ...string) *exec.Cmd {
-			if name == "git" && len(args) > 0 && args[0] == "branch" && args[1] == "--merged" {
-				cmd := exec.Command("echo", "  main\n  feature/merged")
-				return cmd
-			}
-			return exec.Command("echo")
-		},
+
 		inputReader: bufio.NewReader(strings.NewReader("all\n")),
 	}
 
@@ -472,13 +504,7 @@ func TestBrancher_branchDeleteMerged_Cancel(t *testing.T) {
 	brancher := &Brancher{
 		gitClient:    mockClient,
 		outputWriter: &buf,
-		execCommand: func(name string, args ...string) *exec.Cmd {
-			if name == "git" && len(args) > 0 && args[0] == "branch" && args[1] == "--merged" {
-				cmd := exec.Command("echo", "  main\n  feature/merged")
-				return cmd
-			}
-			return exec.Command("echo")
-		},
+
 		inputReader: bufio.NewReader(strings.NewReader("\n")),
 	}
 
@@ -516,13 +542,6 @@ func TestBrancher_branchDeleteMerged_NoMergedBranches(t *testing.T) {
 	brancher := &Brancher{
 		gitClient:    mockClient,
 		outputWriter: &buf,
-		execCommand: func(name string, args ...string) *exec.Cmd {
-			if name == "git" && len(args) > 0 && args[0] == "branch" && args[1] == "--merged" {
-				cmd := exec.Command("echo", "  main")
-				return cmd
-			}
-			return exec.Command("echo")
-		},
 	}
 
 	brancher.branchDeleteMerged()
@@ -538,8 +557,8 @@ func TestBrancher_branchCheckoutRemote_Success(t *testing.T) {
 	brancher := &Brancher{
 		gitClient:    &mockBranchGitClient{},
 		outputWriter: &buf,
-		execCommand:  func(_ string, _ ...string) *exec.Cmd { return exec.Command("echo") },
-		inputReader:  bufio.NewReader(strings.NewReader("2\n")),
+
+		inputReader: bufio.NewReader(strings.NewReader("2\n")),
 	}
 
 	brancher.branchCheckoutRemote()
@@ -558,8 +577,8 @@ func TestBrancher_branchCheckoutRemote_InvalidNumber(t *testing.T) {
 	brancher := &Brancher{
 		gitClient:    &mockBranchGitClient{},
 		outputWriter: &buf,
-		execCommand:  func(_ string, _ ...string) *exec.Cmd { return exec.Command("echo") },
-		inputReader:  bufio.NewReader(strings.NewReader("invalid\n")),
+
+		inputReader: bufio.NewReader(strings.NewReader("invalid\n")),
 	}
 
 	brancher.branchCheckoutRemote()
@@ -580,8 +599,8 @@ func TestBrancher_branchCheckoutRemote_InvalidBranchName(t *testing.T) {
 	brancher := &Brancher{
 		gitClient:    mockClient,
 		outputWriter: &buf,
-		execCommand:  func(_ string, _ ...string) *exec.Cmd { return exec.Command("echo") },
-		inputReader:  bufio.NewReader(strings.NewReader("1\n")),
+
+		inputReader: bufio.NewReader(strings.NewReader("1\n")),
 	}
 
 	brancher.branchCheckoutRemote()
@@ -630,12 +649,6 @@ func TestBrancher_Branch_Create(t *testing.T) {
 				gitClient:    &mockBranchGitClient{},
 				outputWriter: &buf,
 				inputReader:  bufio.NewReader(strings.NewReader(tt.input)),
-				execCommand: func(_ string, _ ...string) *exec.Cmd {
-					if tt.cmdError {
-						return exec.Command("false")
-					}
-					return exec.Command("echo", tt.cmdOutput)
-				},
 			}
 
 			brancher.Branch([]string{"create"})
@@ -654,12 +667,6 @@ func TestBrancher_branchCreate_ExistingBranch(t *testing.T) {
 		gitClient:    &mockBranchGitClient{},
 		outputWriter: &buf,
 		inputReader:  bufio.NewReader(strings.NewReader("main\n")),
-		execCommand: func(_ string, _ ...string) *exec.Cmd {
-			// Set up git command to return error
-			cmd := exec.Command("echo", "fatal: A branch named 'main' already exists.")
-			cmd.Stderr = cmd.Stdout
-			return cmd
-		},
 	}
 
 	brancher.Branch([]string{"create"})
@@ -721,8 +728,8 @@ func TestBrancher_Branch_BoundaryInputValues(t *testing.T) {
 			brancher := &Brancher{
 				gitClient:    mockClient,
 				outputWriter: &buf,
-				execCommand:  func(_ string, _ ...string) *exec.Cmd { return exec.Command("echo") },
-				inputReader:  bufio.NewReader(strings.NewReader(tt.input)),
+
+				inputReader: bufio.NewReader(strings.NewReader(tt.input)),
 			}
 
 			brancher.branchCheckout()
@@ -823,12 +830,6 @@ func TestBrancher_Branch_BoundaryBranchNames(t *testing.T) {
 				gitClient:    &mockBranchGitClient{},
 				outputWriter: &buf,
 				inputReader:  bufio.NewReader(strings.NewReader(tt.branchName + "\n")),
-				execCommand: func(_ string, _ ...string) *exec.Cmd {
-					if tt.expectedPass {
-						return exec.Command("echo")
-					}
-					return exec.Command("false")
-				},
 			}
 
 			brancher.branchCreate()
@@ -907,12 +908,6 @@ func TestBrancher_Branch_BoundaryUserInput(t *testing.T) {
 				gitClient:    &mockBranchGitClient{},
 				outputWriter: &buf,
 				inputReader:  bufio.NewReader(strings.NewReader(tt.input)),
-				execCommand: func(_ string, _ ...string) *exec.Cmd {
-					if strings.Contains(tt.expected, "Error:") {
-						return exec.Command("false")
-					}
-					return exec.Command("echo")
-				},
 			}
 
 			brancher.branchCreate()
@@ -971,8 +966,8 @@ func TestBrancher_Branch_BoundaryListOperations(t *testing.T) {
 			brancher := &Brancher{
 				gitClient:    mockClient,
 				outputWriter: &buf,
-				execCommand:  func(_ string, _ ...string) *exec.Cmd { return exec.Command("echo") },
-				inputReader:  bufio.NewReader(strings.NewReader(tt.input)),
+
+				inputReader: bufio.NewReader(strings.NewReader(tt.input)),
 			}
 
 			brancher.branchCheckout()
@@ -1041,8 +1036,8 @@ func TestBrancher_Branch_BoundaryDeleteOperations(t *testing.T) {
 			brancher := &Brancher{
 				gitClient:    mockClient,
 				outputWriter: &buf,
-				execCommand:  func(_ string, _ ...string) *exec.Cmd { return exec.Command("echo") },
-				inputReader:  bufio.NewReader(strings.NewReader(tt.input)),
+
+				inputReader: bufio.NewReader(strings.NewReader(tt.input)),
 			}
 
 			brancher.branchDelete()
@@ -1093,8 +1088,8 @@ func TestBrancher_Branch_BoundaryRemoteOperations(t *testing.T) {
 			brancher := &Brancher{
 				gitClient:    mockClient,
 				outputWriter: &buf,
-				execCommand:  func(_ string, _ ...string) *exec.Cmd { return exec.Command("echo") },
-				inputReader:  bufio.NewReader(strings.NewReader(tt.input)),
+
+				inputReader: bufio.NewReader(strings.NewReader(tt.input)),
 			}
 
 			brancher.branchDelete()

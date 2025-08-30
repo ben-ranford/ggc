@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"os/exec"
 	"strings"
 	"testing"
 
@@ -165,9 +164,7 @@ func TestCleaner_CleanInteractive_NoFiles(t *testing.T) {
 	cleaner := &Cleaner{
 		gitClient:    &mockCleanGitClient{},
 		outputWriter: &buf,
-		execCommand: func(_ string, _ ...string) *exec.Cmd {
-			return exec.Command("echo", "")
-		},
+
 		helper: NewHelper(),
 	}
 	cleaner.helper.outputWriter = &buf
@@ -186,12 +183,7 @@ func TestCleaner_CleanInteractive_WithFiles(t *testing.T) {
 	cleaner := &Cleaner{
 		gitClient:    &mockCleanGitClient{},
 		outputWriter: &buf,
-		execCommand: func(_ string, arg ...string) *exec.Cmd {
-			if len(arg) > 0 && arg[0] == "clean" && arg[1] == "-nd" {
-				return exec.Command("echo", "Would remove file1.txt\nWould remove file2.txt")
-			}
-			return exec.Command("echo", "")
-		},
+
 		inputReader: bufio.NewReader(inputBuf),
 		helper:      NewHelper(),
 	}
@@ -209,9 +201,7 @@ func TestCleaner_CleanInteractive_Error(t *testing.T) {
 	cleaner := &Cleaner{
 		gitClient:    &mockCleanGitClient{},
 		outputWriter: &buf,
-		execCommand: func(_ string, _ ...string) *exec.Cmd {
-			return exec.Command("false")
-		},
+
 		helper: NewHelper(),
 	}
 	cleaner.helper.outputWriter = &buf
@@ -230,12 +220,7 @@ func TestCleaner_CleanInteractive_Cancel(t *testing.T) {
 	cleaner := &Cleaner{
 		gitClient:    &mockCleanGitClient{},
 		outputWriter: &buf,
-		execCommand: func(_ string, arg ...string) *exec.Cmd {
-			if len(arg) > 0 && arg[0] == "clean" && arg[1] == "-nd" {
-				return exec.Command("echo", "Would remove file1.txt")
-			}
-			return exec.Command("echo", "")
-		},
+
 		inputReader: bufio.NewReader(inputBuf),
 		helper:      NewHelper(),
 	}
@@ -254,12 +239,7 @@ func TestCleaner_CleanInteractive_InvalidNumber(t *testing.T) {
 	cleaner := &Cleaner{
 		gitClient:    &mockCleanGitClient{},
 		outputWriter: &buf,
-		execCommand: func(_ string, arg ...string) *exec.Cmd {
-			if len(arg) > 0 && arg[0] == "clean" && arg[1] == "-nd" {
-				return exec.Command("echo", "Would remove file1.txt")
-			}
-			return exec.Command("echo", "")
-		},
+
 		inputReader: bufio.NewReader(inputBuf),
 		helper:      NewHelper(),
 	}
@@ -278,12 +258,7 @@ func TestCleaner_CleanInteractive_EmptySelection(t *testing.T) {
 	cleaner := &Cleaner{
 		gitClient:    &mockCleanGitClient{},
 		outputWriter: &buf,
-		execCommand: func(_ string, arg ...string) *exec.Cmd {
-			if len(arg) > 0 && arg[0] == "clean" && arg[1] == "-nd" {
-				return exec.Command("echo", "Would remove file1.txt\nWould remove file2.txt")
-			}
-			return exec.Command("echo", "")
-		},
+
 		inputReader: bufio.NewReader(inputBuf),
 		helper:      NewHelper(),
 	}
@@ -302,12 +277,7 @@ func TestCleaner_CleanInteractive_FileRejection(t *testing.T) {
 	cleaner := &Cleaner{
 		gitClient:    &mockCleanGitClient{},
 		outputWriter: &buf,
-		execCommand: func(_ string, arg ...string) *exec.Cmd {
-			if len(arg) > 0 && arg[0] == "clean" && arg[1] == "-nd" {
-				return exec.Command("echo", "Would remove file1.txt")
-			}
-			return exec.Command("echo", "")
-		},
+
 		inputReader: bufio.NewReader(inputBuf),
 		helper:      NewHelper(),
 	}
@@ -331,12 +301,7 @@ func TestCleaner_CleanInteractive_NothingSelected(t *testing.T) {
 	cleaner := &Cleaner{
 		gitClient:    &mockCleanGitClient{},
 		outputWriter: &buf,
-		execCommand: func(_ string, arg ...string) *exec.Cmd {
-			if len(arg) > 0 && arg[0] == "clean" && arg[1] == "-nd" {
-				return exec.Command("echo", "Would remove file1.txt")
-			}
-			return exec.Command("echo", "")
-		},
+
 		inputReader: bufio.NewReader(inputBuf),
 		helper:      NewHelper(),
 	}
