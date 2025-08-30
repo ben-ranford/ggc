@@ -228,7 +228,7 @@ func TestAdder_Add_POption_Error(t *testing.T) {
 		outputWriter: &buf,
 	}
 	adder.Add([]string{"-p"})
-	
+
 	output := buf.String()
 	if output == "" || output[:5] != "Error" {
 		t.Errorf("Error output not generated with -p option: %s", output)

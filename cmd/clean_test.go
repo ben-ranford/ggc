@@ -10,10 +10,10 @@ import (
 
 // mockGitClient for clean_test
 type mockCleanGitClient struct {
-	cleanFilesErr    error
-	cleanDirsErr     error
-	cleanFilesCalled bool
-	cleanDirsCalled  bool
+	cleanFilesErr     error
+	cleanDirsErr      error
+	cleanFilesCalled  bool
+	cleanDirsCalled   bool
 	cleanDryRunResult string
 	cleanDryRunErr    error
 }
@@ -37,13 +37,13 @@ func (m *mockCleanGitClient) CleanFilesForce(files []string) error {
 }
 
 // Implement all other required methods from git.Clienter interface
-func (m *mockCleanGitClient) GetCurrentBranch() (string, error) { return "main", nil }
-func (m *mockCleanGitClient) GetBranchName() (string, error)    { return "main", nil }
-func (m *mockCleanGitClient) GetGitStatus() (string, error)     { return "", nil }
-func (m *mockCleanGitClient) Status() (string, error)          { return "", nil }
-func (m *mockCleanGitClient) StatusShort() (string, error)     { return "", nil }
-func (m *mockCleanGitClient) StatusWithColor() (string, error) { return "", nil }
-func (m *mockCleanGitClient) StatusShortWithColor() (string, error) { return "", nil }
+func (m *mockCleanGitClient) GetCurrentBranch() (string, error)           { return "main", nil }
+func (m *mockCleanGitClient) GetBranchName() (string, error)              { return "main", nil }
+func (m *mockCleanGitClient) GetGitStatus() (string, error)               { return "", nil }
+func (m *mockCleanGitClient) Status() (string, error)                     { return "", nil }
+func (m *mockCleanGitClient) StatusShort() (string, error)                { return "", nil }
+func (m *mockCleanGitClient) StatusWithColor() (string, error)            { return "", nil }
+func (m *mockCleanGitClient) StatusShortWithColor() (string, error)       { return "", nil }
 func (m *mockCleanGitClient) Add(files ...string) error                   { return nil }
 func (m *mockCleanGitClient) AddInteractive() error                       { return nil }
 func (m *mockCleanGitClient) Commit(message string) error                 { return nil }
@@ -56,52 +56,52 @@ func (m *mockCleanGitClient) DiffStaged() (string, error)                 { retu
 func (m *mockCleanGitClient) DiffHead() (string, error)                   { return "", nil }
 func (m *mockCleanGitClient) ListLocalBranches() ([]string, error)        { return []string{}, nil }
 func (m *mockCleanGitClient) ListRemoteBranches() ([]string, error)       { return []string{}, nil }
-func (m *mockCleanGitClient) CheckoutNewBranch(name string) error { return nil }
-func (m *mockCleanGitClient) CheckoutBranch(name string) error    { return nil }
+func (m *mockCleanGitClient) CheckoutNewBranch(name string) error         { return nil }
+func (m *mockCleanGitClient) CheckoutBranch(name string) error            { return nil }
 func (m *mockCleanGitClient) CheckoutNewBranchFromRemote(localBranch, remoteBranch string) error {
 	return nil
 }
-func (m *mockCleanGitClient) DeleteBranch(name string) error        { return nil }
-func (m *mockCleanGitClient) ListMergedBranches() ([]string, error) { return []string{}, nil }
-func (m *mockCleanGitClient) Push(force bool) error               { return nil }
-func (m *mockCleanGitClient) Pull(rebase bool) error              { return nil }
-func (m *mockCleanGitClient) Fetch(prune bool) error              { return nil }
-func (m *mockCleanGitClient) RemoteList() error                   { return nil }
-func (m *mockCleanGitClient) RemoteAdd(name, url string) error    { return nil }
-func (m *mockCleanGitClient) RemoteRemove(name string) error      { return nil }
-func (m *mockCleanGitClient) RemoteSetURL(name, url string) error { return nil }
-func (m *mockCleanGitClient) LogSimple() error                    { return nil }
-func (m *mockCleanGitClient) LogGraph() error                     { return nil }
+func (m *mockCleanGitClient) DeleteBranch(name string) error             { return nil }
+func (m *mockCleanGitClient) ListMergedBranches() ([]string, error)      { return []string{}, nil }
+func (m *mockCleanGitClient) Push(force bool) error                      { return nil }
+func (m *mockCleanGitClient) Pull(rebase bool) error                     { return nil }
+func (m *mockCleanGitClient) Fetch(prune bool) error                     { return nil }
+func (m *mockCleanGitClient) RemoteList() error                          { return nil }
+func (m *mockCleanGitClient) RemoteAdd(name, url string) error           { return nil }
+func (m *mockCleanGitClient) RemoteRemove(name string) error             { return nil }
+func (m *mockCleanGitClient) RemoteSetURL(name, url string) error        { return nil }
+func (m *mockCleanGitClient) LogSimple() error                           { return nil }
+func (m *mockCleanGitClient) LogGraph() error                            { return nil }
 func (m *mockCleanGitClient) LogOneline(from, to string) (string, error) { return "", nil }
-func (m *mockCleanGitClient) RebaseInteractive(commitCount int) error { return nil }
+func (m *mockCleanGitClient) RebaseInteractive(commitCount int) error    { return nil }
 func (m *mockCleanGitClient) GetUpstreamBranch(branch string) (string, error) {
 	return "origin/main", nil
 }
-func (m *mockCleanGitClient) Stash() error                       { return nil }
-func (m *mockCleanGitClient) StashList() (string, error)         { return "", nil }
-func (m *mockCleanGitClient) StashShow(stash string) error       { return nil }
-func (m *mockCleanGitClient) StashApply(stash string) error      { return nil }
-func (m *mockCleanGitClient) StashPop(stash string) error        { return nil }
-func (m *mockCleanGitClient) StashDrop(stash string) error       { return nil }
-func (m *mockCleanGitClient) StashClear() error                  { return nil }
+func (m *mockCleanGitClient) Stash() error                                           { return nil }
+func (m *mockCleanGitClient) StashList() (string, error)                             { return "", nil }
+func (m *mockCleanGitClient) StashShow(stash string) error                           { return nil }
+func (m *mockCleanGitClient) StashApply(stash string) error                          { return nil }
+func (m *mockCleanGitClient) StashPop(stash string) error                            { return nil }
+func (m *mockCleanGitClient) StashDrop(stash string) error                           { return nil }
+func (m *mockCleanGitClient) StashClear() error                                      { return nil }
 func (m *mockCleanGitClient) RestoreWorkingDir(paths ...string) error                { return nil }
 func (m *mockCleanGitClient) RestoreStaged(paths ...string) error                    { return nil }
 func (m *mockCleanGitClient) RestoreFromCommit(commit string, paths ...string) error { return nil }
 func (m *mockCleanGitClient) RestoreAll() error                                      { return nil }
 func (m *mockCleanGitClient) RestoreAllStaged() error                                { return nil }
-func (m *mockCleanGitClient) ResetHardAndClean() error { return nil }
-func (m *mockCleanGitClient) ResetHard(commit string) error        { return nil }
-func (m *mockCleanGitClient) TagList(pattern []string) error                { return nil }
-func (m *mockCleanGitClient) TagCreate(name string, commit string) error    { return nil }
-func (m *mockCleanGitClient) TagCreateAnnotated(name, message string) error { return nil }
-func (m *mockCleanGitClient) TagDelete(names []string) error                { return nil }
-func (m *mockCleanGitClient) TagPush(remote, name string) error             { return nil }
-func (m *mockCleanGitClient) TagPushAll(remote string) error                { return nil }
-func (m *mockCleanGitClient) TagShow(name string) error                     { return nil }
-func (m *mockCleanGitClient) GetLatestTag() (string, error)                 { return "", nil }
-func (m *mockCleanGitClient) TagExists(name string) bool                    { return false }
-func (m *mockCleanGitClient) GetTagCommit(name string) (string, error)      { return "abc123", nil }
-func (m *mockCleanGitClient) ListFiles() (string, error)                    { return "", nil }
+func (m *mockCleanGitClient) ResetHardAndClean() error                               { return nil }
+func (m *mockCleanGitClient) ResetHard(commit string) error                          { return nil }
+func (m *mockCleanGitClient) TagList(pattern []string) error                         { return nil }
+func (m *mockCleanGitClient) TagCreate(name string, commit string) error             { return nil }
+func (m *mockCleanGitClient) TagCreateAnnotated(name, message string) error          { return nil }
+func (m *mockCleanGitClient) TagDelete(names []string) error                         { return nil }
+func (m *mockCleanGitClient) TagPush(remote, name string) error                      { return nil }
+func (m *mockCleanGitClient) TagPushAll(remote string) error                         { return nil }
+func (m *mockCleanGitClient) TagShow(name string) error                              { return nil }
+func (m *mockCleanGitClient) GetLatestTag() (string, error)                          { return "", nil }
+func (m *mockCleanGitClient) TagExists(name string) bool                             { return false }
+func (m *mockCleanGitClient) GetTagCommit(name string) (string, error)               { return "abc123", nil }
+func (m *mockCleanGitClient) ListFiles() (string, error)                             { return "", nil }
 func (m *mockCleanGitClient) GetUpstreamBranchName(branch string) (string, error) {
 	return "origin/main", nil
 }
