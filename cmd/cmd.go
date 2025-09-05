@@ -2,13 +2,14 @@
 package cmd
 
 import (
-	"fmt"
-	"io"
-	"os"
-	"os/signal"
-	"syscall"
+    "fmt"
+    "io"
+    "os"
+    "os/signal"
+    "strings"
+    "syscall"
 
-	"github.com/bmf-san/ggc/v5/git"
+    "github.com/bmf-san/ggc/v5/git"
 )
 
 // Executer is an interface for executing commands.
@@ -226,14 +227,20 @@ func (c *Cmd) Interactive() {
 
 // Route routes the command to the appropriate handler based on args.
 func (c *Cmd) Route(args []string) {
-	if len(args) == 0 {
-		c.Help()
-		return
-	}
+    if len(args) == 0 {
+        c.Help()
+        return
+    }
 
-	switch args[0] {
-	case "help":
-		c.Help()
+    // Friendly hint for legacy syntax (flags/hyphens) without executing
+    if suggestion, ok := suggestNewSyntax(args); ok {
+        fmt.Fprintf(c.outputWriter, "Legacy syntax detected.\nUse: ggc %s\n", suggestion)
+        return
+    }
+
+    switch args[0] {
+    case "help":
+        c.Help()
 	case "add":
 		c.adder.Add(args[1:])
 	case "branch":
@@ -252,8 +259,7 @@ func (c *Cmd) Route(args []string) {
 		c.Clean(args[1:])
 	case "version":
 		c.Version(args[1:])
-	case "clean-interactive":
-		c.cleaner.CleanInteractive()
+    // 'clean interactive' is handled within clean command
 	case "remote":
 		c.remoteer.Remote(args[1:])
 	case "rebase":
@@ -279,6 +285,114 @@ func (c *Cmd) Route(args []string) {
 	default:
 		c.Help()
 	}
+}
+
+// suggestNewSyntax returns a friendly suggestion for unified syntax if a legacy
+// pattern is detected. It does not execute the command.
+func suggestNewSyntax(args []string) (string, bool) {
+    if len(args) == 0 {
+        return "", false
+    }
+
+    // Top-level hyphenated commands
+    switch args[0] {
+    case "clean-interactive":
+        return "clean interactive", true
+    }
+
+    // Command-specific legacy flags / hyphen subcommands
+    if args[0] == "rebase" {
+        for _, a := range args[1:] {
+            if a == "-i" || a == "--interactive" {
+                return "rebase interactive", true
+            }
+        }
+    }
+
+    if args[0] == "add" {
+        for _, a := range args[1:] {
+            switch a {
+            case "-p":
+                return "add patch", true
+            case "-i", "--interactive":
+                return "add interactive", true
+            }
+        }
+    }
+
+    if args[0] == "restore" {
+        // ggc restore --staged <files...> -> ggc restore staged <files...>
+        out := []string{"restore"}
+        staged := false
+        rest := []string{}
+        for _, a := range args[1:] {
+            if a == "--staged" {
+                staged = true
+                continue
+            }
+            rest = append(rest, a)
+        }
+        if staged {
+            suggestion := append(out, append([]string{"staged"}, rest...)...)
+            return strings.Join(suggestion, " "), true
+        }
+    }
+
+    if args[0] == "fetch" {
+        for _, a := range args[1:] {
+            if a == "--prune" {
+                return "fetch prune", true
+            }
+        }
+    }
+
+    if args[0] == "commit" {
+        // --allow-empty -> allow empty; allow-empty -> allow empty
+        for i, a := range args[1:] {
+            if a == "--allow-empty" || a == "allow-empty" {
+                return "commit allow empty", true
+            }
+            // amend --no-edit -> amend no-edit
+            if a == "amend" && i+2 <= len(args[1:]) {
+                // lookahead for --no-edit
+                for _, b := range args[i+2:] {
+                    if b == "--no-edit" {
+                        return "commit amend no-edit", true
+                    }
+                }
+            }
+        }
+        // amend / --amend [--no-edit] -> amend [no-edit]
+        hasAmend := false
+        hasNoEdit := false
+        for _, a := range args[1:] {
+            if a == "amend" || a == "--amend" {
+                hasAmend = true
+            }
+            if a == "--no-edit" {
+                hasNoEdit = true
+            }
+        }
+        if hasAmend {
+            if hasNoEdit {
+                return "commit amend no-edit", true
+            }
+            return "commit amend", true
+        }
+    }
+
+    if args[0] == "branch" && len(args) >= 2 {
+        switch args[1] {
+        case "checkout-remote":
+            return "branch checkout remote", true
+        case "delete-merged":
+            return "branch delete merged", true
+        case "set-upstream":
+            return "branch set upstream", true
+        }
+    }
+
+    return "", false
 }
 
 // waitForContinue waits for user input to continue

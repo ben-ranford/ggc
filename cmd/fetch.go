@@ -31,13 +31,13 @@ func (f *Fetcher) Fetch(args []string) {
 		return
 	}
 
-	switch args[0] {
-	case "--prune":
-		if err := f.gitClient.Fetch(true); err != nil {
-			_, _ = fmt.Fprintf(f.outputWriter, "Error: %v\n", err)
-		}
-	default:
-		f.helper.ShowFetchHelp()
-		return
-	}
+    switch args[0] {
+    case "prune":
+        if err := f.gitClient.Fetch(true); err != nil {
+            _, _ = fmt.Fprintf(f.outputWriter, "Error: %v\n", err)
+        }
+    default:
+        f.helper.ShowFetchHelp()
+        return
+    }
 }

@@ -35,28 +35,32 @@ func (c *Committer) Commit(args []string) {
 		return
 	}
 
-	switch args[0] {
-	case "allow-empty":
-		if err := c.gitClient.CommitAllowEmpty(); err != nil {
-			_, _ = fmt.Fprintf(c.outputWriter, "Error: %v\n", err)
-		}
-	case "amend":
-		switch {
-		case len(args) == 1:
-			if err := c.gitClient.CommitAmend(); err != nil {
-				_, _ = fmt.Fprintf(c.outputWriter, "Error: %v\n", err)
-			}
-		case args[1] == "--no-edit":
-			if err := c.gitClient.CommitAmendNoEdit(); err != nil {
-				_, _ = fmt.Fprintf(c.outputWriter, "Error: %v\n", err)
-			}
-		default:
-			// Join all arguments after "amend" as the commit message
-			msg := strings.Join(args[1:], " ")
-			if err := c.gitClient.CommitAmendWithMessage(msg); err != nil {
-				_, _ = fmt.Fprintf(c.outputWriter, "Error: %v\n", err)
-			}
-		}
+    switch args[0] {
+    case "allow":
+        if len(args) >= 2 && args[1] == "empty" {
+            if err := c.gitClient.CommitAllowEmpty(); err != nil {
+                _, _ = fmt.Fprintf(c.outputWriter, "Error: %v\n", err)
+            }
+            return
+        }
+        c.helper.ShowCommitHelp()
+    case "amend":
+        switch {
+        case len(args) == 1:
+            if err := c.gitClient.CommitAmend(); err != nil {
+                _, _ = fmt.Fprintf(c.outputWriter, "Error: %v\n", err)
+            }
+        case args[1] == "no-edit":
+            if err := c.gitClient.CommitAmendNoEdit(); err != nil {
+                _, _ = fmt.Fprintf(c.outputWriter, "Error: %v\n", err)
+            }
+        default:
+            // Join all arguments after "amend" as the commit message
+            msg := strings.Join(args[1:], " ")
+            if err := c.gitClient.CommitAmendWithMessage(msg); err != nil {
+                _, _ = fmt.Fprintf(c.outputWriter, "Error: %v\n", err)
+            }
+        }
 	default:
 		// Handle normal commit with message
 		msg := strings.Join(args, " ")

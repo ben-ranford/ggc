@@ -25,24 +25,24 @@ func NewAdder(client git.Clienter) *Adder {
 
 // Add executes the add command with the given arguments.
 func (a *Adder) Add(args []string) {
-	if len(args) == 0 {
-		_, _ = fmt.Fprintf(a.outputWriter, "Usage: ggc add <file> | ggc add interactive | ggc add -p\n")
-		return
-	}
+    if len(args) == 0 {
+        _, _ = fmt.Fprintf(a.outputWriter, "Usage: ggc add <file> | ggc add interactive | ggc add patch\n")
+        return
+    }
 
-	if len(args) == 1 && args[0] == "interactive" {
-		if err := a.gitClient.AddInteractive(); err != nil {
-			_, _ = fmt.Fprintf(a.outputWriter, "Error: %v\n", err)
-		}
-		return
-	}
+    if len(args) == 1 && args[0] == "interactive" {
+        if err := a.gitClient.AddInteractive(); err != nil {
+            _, _ = fmt.Fprintf(a.outputWriter, "Error: %v\n", err)
+        }
+        return
+    }
 
-	if len(args) == 1 && args[0] == "-p" {
-		if err := a.gitClient.AddInteractive(); err != nil {
-			_, _ = fmt.Fprintf(a.outputWriter, "Error: %v\n", err)
-		}
-		return
-	}
+    if len(args) == 1 && args[0] == "patch" {
+        if err := a.gitClient.AddInteractive(); err != nil {
+            _, _ = fmt.Fprintf(a.outputWriter, "Error: %v\n", err)
+        }
+        return
+    }
 
 	if err := a.gitClient.Add(args...); err != nil {
 		_, _ = fmt.Fprintf(a.outputWriter, "Error: %v\n", err)

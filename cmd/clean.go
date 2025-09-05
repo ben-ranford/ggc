@@ -34,23 +34,25 @@ func NewCleaner(client git.Clienter) *Cleaner {
 
 // Clean executes the clean command with the given arguments.
 func (c *Cleaner) Clean(args []string) {
-	if len(args) == 0 {
-		c.helper.ShowCleanHelp()
-		return
-	}
+    if len(args) == 0 {
+        c.helper.ShowCleanHelp()
+        return
+    }
 
-	switch args[0] {
-	case "files":
-		if err := c.gitClient.CleanFiles(); err != nil {
-			_, _ = fmt.Fprintf(c.outputWriter, "Error: %v\n", err)
-		}
-	case "dirs":
-		if err := c.gitClient.CleanDirs(); err != nil {
-			_, _ = fmt.Fprintf(c.outputWriter, "Error: %v\n", err)
-		}
-	default:
-		c.helper.ShowCleanHelp()
-	}
+    switch args[0] {
+    case "files":
+        if err := c.gitClient.CleanFiles(); err != nil {
+            _, _ = fmt.Fprintf(c.outputWriter, "Error: %v\n", err)
+        }
+    case "dirs":
+        if err := c.gitClient.CleanDirs(); err != nil {
+            _, _ = fmt.Fprintf(c.outputWriter, "Error: %v\n", err)
+        }
+    case "interactive":
+        c.CleanInteractive()
+    default:
+        c.helper.ShowCleanHelp()
+    }
 }
 
 // CleanInteractive interactively selects files to clean.

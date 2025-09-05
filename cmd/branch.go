@@ -33,9 +33,9 @@ func NewBrancher(client git.Clienter) *Brancher {
 
 // Branch executes the branch command with the given arguments.
 func (b *Brancher) Branch(args []string) {
-	if len(args) > 0 {
-		switch args[0] {
-		case "current":
+    if len(args) > 0 {
+        switch args[0] {
+        case "current":
 			branch, err := b.gitClient.GetCurrentBranch()
 			if err != nil {
 				_, _ = fmt.Fprintf(b.outputWriter, "Error: %v\n", err)
@@ -46,36 +46,45 @@ func (b *Brancher) Branch(args []string) {
 		case "checkout":
 			b.branchCheckout()
 			return
-		case "checkout-remote":
-			b.branchCheckoutRemote()
-			return
-		case "create":
-			b.branchCreate()
-			return
-		case "delete":
-			b.branchDelete()
-			return
-		case "delete-merged":
-			b.branchDeleteMerged()
-			return
+        case "checkout":
+            if len(args) > 1 && args[1] == "remote" {
+                b.branchCheckoutRemote()
+            } else {
+                b.branchCheckout()
+            }
+            return
+        case "create":
+            b.branchCreate()
+            return
+        case "delete":
+            if len(args) > 1 && args[1] == "merged" {
+                b.branchDeleteMerged()
+            } else {
+                b.branchDelete()
+            }
+            return
 		case "rename":
 			b.branchRename()
 			return
 		case "move":
 			b.branchMove()
 			return
-		case "set-upstream":
-			b.branchSetUpstream()
-			return
+        case "set":
+            if len(args) > 1 && args[1] == "upstream" {
+                b.branchSetUpstream()
+                return
+            }
+            b.helper.ShowBranchHelp()
+            return
 		case "info":
 			b.branchInfo()
 			return
-		case "list":
-			// Support list --verbose
-			if len(args) > 1 && (args[1] == "--verbose" || args[1] == "-v") {
-				b.branchListVerbose()
-				return
-			}
+        case "list":
+            // Support list verbose
+            if len(args) > 1 && (args[1] == "verbose" || args[1] == "--verbose" || args[1] == "-v") {
+                b.branchListVerbose()
+                return
+            }
 		case "sort":
 			b.branchSort()
 			return

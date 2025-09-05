@@ -35,18 +35,18 @@ func (r *Restoreer) Restore(args []string) {
 		return
 	}
 
-	switch args[0] {
-	case "--staged":
-		if len(args) < 2 {
-			r.helper.ShowRestoreHelp()
-			return
-		}
+    switch args[0] {
+    case "staged":
+        if len(args) < 2 {
+            r.helper.ShowRestoreHelp()
+            return
+        }
 
-		paths := args[1:]
-		if err := r.gitClient.RestoreStaged(paths...); err != nil {
-			_, _ = fmt.Fprintf(r.outputWriter, "Error: %v\n", err)
-			return
-		}
+        paths := args[1:]
+        if err := r.gitClient.RestoreStaged(paths...); err != nil {
+            _, _ = fmt.Fprintf(r.outputWriter, "Error: %v\n", err)
+            return
+        }
 
 	default:
 		// Prefer git to validate commit-ish to avoid false positives

@@ -32,20 +32,17 @@ func NewRebaser(client git.Clienter) *Rebaser {
 
 // Rebase executes git rebase commands.
 func (r *Rebaser) Rebase(args []string) {
-	if len(args) == 0 {
-		r.helper.ShowRebaseHelp()
-		return
-	}
+    if len(args) == 0 {
+        r.helper.ShowRebaseHelp()
+        return
+    }
 
-	switch args[0] {
-	case "-i", "--interactive":
-		r.RebaseInteractive()
-	case "interactive":
-		_, _ = fmt.Fprintln(r.outputWriter, "Error: 'ggc rebase interactive' is no longer supported. Use 'ggc rebase -i' or 'ggc rebase --interactive'.")
-		r.helper.ShowRebaseHelp()
-	default:
-		r.helper.ShowRebaseHelp()
-	}
+    switch args[0] {
+    case "interactive":
+        r.RebaseInteractive()
+    default:
+        r.helper.ShowRebaseHelp()
+    }
 }
 
 // RebaseInteractive executes interactive rebase.

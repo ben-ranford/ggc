@@ -170,16 +170,16 @@ ggc
 | `add <file>` | Add specific file to the index |
 | `add .` | Add all changes |
 | `add interactive` | Add changes interactively |
-| `add -p` | Add changes interactively (patch mode) |
+| `add patch` | Add changes interactively (patch mode) |
 | `branch current` | Show current branch |
 | `branch checkout` | Checkout existing branch |
-| `branch checkout-remote` | Checkout remote branch |
+| `branch checkout remote` | Checkout remote branch |
 | `branch create` | Create and checkout new branch |
 | `branch delete` | Delete a branch |
-| `branch delete-merged` | Delete merged branches |
+| `branch delete merged` | Delete merged branches |
 | `branch rename <old> <new>` | Rename a branch |
 | `branch move <branch> <commit>` | Move branch to specified commit |
-| `branch set-upstream <branch> <upstream>` | Set upstream for a branch |
+| `branch set upstream <branch> <upstream>` | Set upstream for a branch |
 | `branch info <branch>` | Show detailed branch information |
 | `branch list --verbose` | Show detailed branch listing |
 | `branch sort [date\|name]` | List branches sorted by date or name |
@@ -190,11 +190,11 @@ ggc
 | `clean dirs` | Clean untracked directories |
 | `commit` | Commit staged changes |
 | `commit amend` | Amend previous commit |
-| `commit amend --no-edit` | Amend without editing message |
-| `commit allow-empty` | Create an empty commit |
+| `commit amend no-edit` | Amend without editing message |
+| `commit allow empty` | Create an empty commit |
 | `diff staged` | Show staged changes |
 | `diff unstaged` | Show unstaged changes |
-| `fetch --prune` | Fetch and prune remotes |
+| `fetch prune` | Fetch and prune remotes |
 | `log simple` | Show commit logs in simple format |
 | `log graph` | Show commit logs with a graph |
 | `pull current` | Pull current branch |

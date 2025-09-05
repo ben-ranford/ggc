@@ -43,64 +43,64 @@ func (h *Helper) ShowCommandHelp(data templates.HelpData) {
 
 // ShowAddHelp shows help message for add command.
 func (h *Helper) ShowAddHelp() {
-	h.ShowCommandHelp(templates.HelpData{
-		Usage:       "ggc add <file> | ggc add -i|--interactive | ggc add -p",
-		Description: "Add file contents to the index",
-		Examples: []string{
-			"ggc add file.txt   # Add a specific file",
-			"ggc add -i         # Add changes interactively",
-			"ggc add --interactive  # Add changes interactively",
-			"ggc add -p         # Add changes interactively (patch mode)",
-		},
-	})
+    h.ShowCommandHelp(templates.HelpData{
+        Usage:       "ggc add <file> | ggc add interactive | ggc add patch",
+        Description: "Add file contents to the index",
+        Examples: []string{
+            "ggc add file.txt   # Add a specific file",
+            "ggc add interactive  # Add changes interactively",
+            "ggc add patch        # Add changes interactively (patch mode)",
+        },
+    })
 }
 
 // ShowBranchHelp shows help message for branch command.
 func (h *Helper) ShowBranchHelp() {
-	h.ShowCommandHelp(templates.HelpData{
-		Usage:       "ggc branch <command>",
-		Description: "List, create, or delete branches",
-		Examples: []string{
-			"ggc branch current     # Show current branch",
-			"ggc branch checkout    # Checkout existing branch",
-			"ggc branch create      # Create and checkout new branch",
-			"ggc branch delete      # Delete a branch",
-			"ggc branch delete-merged              # Delete merged branches",
-			"ggc branch rename <old> <new>         # Rename branch",
-			"ggc branch move <branch> <commit>     # Move branch pointer",
-			"ggc branch set-upstream <branch> <up> # Set upstream branch",
-			"ggc branch info <branch>              # Show branch details",
-			"ggc branch list --verbose             # Detailed branch list",
-			"ggc branch sort [date|name]           # Sort branches",
-			"ggc branch contains <commit>          # Show branches containing commit",
-		},
-	})
+    h.ShowCommandHelp(templates.HelpData{
+        Usage:       "ggc branch <command>",
+        Description: "List, create, or delete branches",
+        Examples: []string{
+            "ggc branch current     # Show current branch",
+            "ggc branch checkout    # Checkout existing branch",
+            "ggc branch create      # Create and checkout new branch",
+            "ggc branch delete      # Delete a branch",
+            "ggc branch delete merged              # Delete merged branches",
+            "ggc branch rename <old> <new>         # Rename branch",
+            "ggc branch move <branch> <commit>     # Move branch pointer",
+            "ggc branch set upstream <branch> <up> # Set upstream branch",
+            "ggc branch info <branch>              # Show branch details",
+            "ggc branch list verbose              # Detailed branch list",
+            "ggc branch sort [date|name]           # Sort branches",
+            "ggc branch contains <commit>          # Show branches containing commit",
+        },
+    })
 }
 
 // ShowCleanHelp shows help message for clean command.
 func (h *Helper) ShowCleanHelp() {
-	h.ShowCommandHelp(templates.HelpData{
-		Usage:       "ggc clean <command>",
-		Description: "Clean untracked files and directories",
-		Examples: []string{
-			"ggc clean files    # Clean untracked files",
-			"ggc clean dirs     # Clean untracked directories",
-		},
-	})
+    h.ShowCommandHelp(templates.HelpData{
+        Usage:       "ggc clean <command>",
+        Description: "Clean untracked files and directories",
+        Examples: []string{
+            "ggc clean files    # Clean untracked files",
+            "ggc clean dirs     # Clean untracked directories",
+            "ggc clean interactive # Clean interactively",
+        },
+    })
 }
 
 // ShowCommitHelp shows help message for commit command.
 func (h *Helper) ShowCommitHelp() {
-	h.ShowCommandHelp(templates.HelpData{
-		Usage:       "ggc commit <message> | ggc commit --amend [--no-edit] [<message>] | ggc commit --allow-empty",
-		Description: "Commit staged changes",
-		Examples: []string{
-			"ggc commit --amend                # Amend previous commit (editor)",
-			"ggc commit --amend --no-edit      # Amend without editing commit message",
-			"ggc commit --amend Updated title  # Amend with new message",
-			"ggc commit --allow-empty          # Create empty commit",
-		},
-	})
+    h.ShowCommandHelp(templates.HelpData{
+        Usage:       "ggc commit <message> | ggc commit amend [no-edit] [<message>] | ggc commit allow empty",
+        Description: "Commit staged changes",
+        Examples: []string{
+            "ggc commit amend                # Amend previous commit (editor)",
+            "ggc commit amend no-edit        # Amend without editing commit message",
+            "ggc commit amend Updated title  # Amend with new message",
+            "ggc commit allow empty          # Create empty commit",
+        },
+    })
 }
 
 // ShowLogHelp shows help message for log command.
@@ -264,14 +264,13 @@ func (h *Helper) ShowVersionHelp() {
 
 // ShowRebaseHelp shows help message for rebase command.
 func (h *Helper) ShowRebaseHelp() {
-	h.ShowCommandHelp(templates.HelpData{
-		Usage:       "ggc rebase [-i|--interactive]",
-		Description: "Rebase current branch (interactive supported)",
-		Examples: []string{
-			"ggc rebase -i            # Interactive rebase",
-			"ggc rebase --interactive # Interactive rebase",
-		},
-	})
+    h.ShowCommandHelp(templates.HelpData{
+        Usage:       "ggc rebase [interactive]",
+        Description: "Rebase current branch (interactive supported)",
+        Examples: []string{
+            "ggc rebase interactive   # Interactive rebase",
+        },
+    })
 }
 
 // ShowResetHelp shows help message for reset command.
@@ -311,13 +310,13 @@ func (h *Helper) ShowDeleteBranchHelp() {
 
 // ShowDeleteMergedBranchHelp displays help for the delete merged branch command.
 func (h *Helper) ShowDeleteMergedBranchHelp() {
-	h.ShowCommandHelp(templates.HelpData{
-		Usage:       "ggc branch delete-merged",
-		Description: "Delete merged branches",
-		Examples: []string{
-			"ggc branch delete-merged   # Delete all merged branches",
-		},
-	})
+    h.ShowCommandHelp(templates.HelpData{
+        Usage:       "ggc branch delete merged",
+        Description: "Delete merged branches",
+        Examples: []string{
+            "ggc branch delete merged   # Delete all merged branches",
+        },
+    })
 }
 
 // ShowDiffHelp displays help for the git diff command.
@@ -335,11 +334,11 @@ func (h *Helper) ShowDiffHelp() {
 
 // ShowFetchHelp shows help message for fetch command.
 func (h *Helper) ShowFetchHelp() {
-	h.ShowCommandHelp(templates.HelpData{
-		Usage:       "ggc fetch [options]",
-		Description: "Download objects and refs from another repository",
-		Examples: []string{
-			"ggc fetch --prune   # Fetch and remove any remote-tracking references that no longer exist on the remote",
-		},
-	})
+    h.ShowCommandHelp(templates.HelpData{
+        Usage:       "ggc fetch [subcommand]",
+        Description: "Download objects and refs from another repository",
+        Examples: []string{
+            "ggc fetch prune   # Fetch and remove any remote-tracking references that no longer exist on the remote",
+        },
+    })
 }
